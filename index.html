@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html>
+
+<body>
+
+  <!-- Run a script -->
+  <script type="module" src="./greetings.js"></script>
+
+  <!-- Connect to the server and pass simple data -->
+  <p>Demo using GET requests</p>
+  <p><a href="hello?lang=french">Say hi in French</a></p>
+  <p><a href="hello?lang=chinese">Say hi in Chinese</a></p>
+  <p><a href="hello?lang=english">Say hi in English</a></p>
+
+
+  <p>Demo using POST request</p>
+  <p>Select your language:</p>
+  <form>
+    <input type="radio" name="language" value="chinese"> Chinese
+    <input type="radio" name="language" value="english"> English
+    <input type="radio" name="language" value="french"> French
+    
+    <p><input type="button" id="btn" value="Say hi!"></p>
+  </form>
+
+  <div id="hello"></div>
+
+  <script>
+     // Get the button
+     const btn = document.querySelector('#btn');
+
+     // Attach a listener to the button.
+     btn.onclick = function () {
+	 // Get the radio buttons.
+         const rbs = document.querySelectorAll('input[name="language"]');
+
+	 // Check the radio buttons to see which is clicked.
+         let selectedValue;
+         for (const rb of rbs) {
+              if (rb.checked) {
+                  selectedValue = rb.value;
+                  break;
+              }
+         }
+
+	 // Display a pop-up message
+         getHelloFromServer(selectedValue);
+    };
+
+    // Holds the request and response
+    var ajaxRequest;
+
+    // Called when the user clicks the Say hi button.
+    // It creates the request and sends it to the server.
+    function getHelloFromServer(language) {
+	ajaxRequest = new XMLHttpRequest();
+	// Register a callback function for when the response arrives.
+	ajaxRequest.onreadystatechange = displayHello;
+
+	// Put the URL into the request
+	ajaxRequest.open("POST", "http://localhost:8080/hello", true);
+
+        // Indicate the body will contain JSON
+	ajaxRequest.setRequestHeader("Content-Type", "application/json");
+
+        // Create the data to send
+	var data = {lang: language};
+
+	// Convert the data to JSON and send it to the server
+	ajaxRequest.send(JSON.stringify (data));
+    }
+
+    // This function is called whenever the state of the request
+    // changes.  The only state change that results in any action is
+    // when a response is received.  At that point, it will display
+    // the hello translation in the original web page.
+    function displayHello() {
+	// readyState == 4 means that the response has arrived
+	// status == 200 means the server response is OK
+	if (ajaxRequest.readyState == 4 && ajaxRequest.status == 200)
+	{
+	    // Get the text that was in the response.  This will be
+	    // "hello, world" in the desired language.
+	    var helloText = ajaxRequest.responseText;
+
+	    // Create the node to put into the document containing the
+	    // desired text.
+	    var helloBody = document.createTextNode (helloText);
+
+	    // Find the portion of the Web page where you want to put
+	    // the translation.
+	    var helloElement = document.getElementById("hello");
+
+	    // If there was already a translation of hello there,
+	    // replace it.  Otherwise, add it.
+	    if (helloElement.childNodes[0]) {
+		helloElement.replaceChild (helloBody,
+					   helloElement.childNodes[0]);
+	    }
+	    else {
+		helloElement.appendChild(helloBody);
+	    }
+	}
+    }
+	    
+  </script>
+
+</body>
+
+</html>
