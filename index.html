@@ -58,7 +58,7 @@
 	ajaxRequest.onreadystatechange = displayHello;
 
 	// Put the URL into the request
-	ajaxRequest.open("POST", "http://localhost:8080/hello", true);
+	ajaxRequest.open("POST", "/hello", true);
 
         // Indicate the body will contain JSON
 	ajaxRequest.setRequestHeader("Content-Type", "application/json");
